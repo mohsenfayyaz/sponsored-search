@@ -35,6 +35,9 @@ class DatasetHandler:
     def get_dataset(self):
         return self.dataset
 
+    def get_vocab_size(self):
+        return len(self.tokenizer.get_vocab()) + len(self.package_to_id)
+
     def df_to_dataset(self, data_df, shuffle=True, fraction=0.1, random_state=0, test_size=0.2):
         if shuffle:
             data_df = data_df.sample(frac=fraction, random_state=random_state).reset_index(drop=True)
