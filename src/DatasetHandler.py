@@ -39,21 +39,3 @@ class DatasetHandler:
             id_to_package[id_counter] = package
             id_counter += 1
         return package_to_id, id_to_package
-
-    def save_negative_sampled_dataset(self, neg_to_pos_ratio: int = 4, output_address="../data/neg_sampled_data.pkl",
-                                      seed=0):
-        self.df["similar"] = 1
-        random.seed(seed)
-        negative_rows = []
-        random_choices = list(self.package_to_id.keys())
-        for query_text, package_name in tqdm(zip(self.df["queryText"], self.df["packageName"]),
-                                             total=len(self.df["queryText"])):
-            for _ in range(neg_to_pos_ratio):
-                random_package = random.choice(random_choices)
-                while random_package == package_name:
-                    random_package = random.choice(random_choices)
-                negative_rows.append({'queryText': query_text, "packageName": random_package, "similar": 0})
-        neg_df = pd.DataFrame(negative_rows)
-        new_df = pd.concat([self.df, neg_df], ignore_index=True)
-        new_df.to_pickle(output_address)
-        return new_df
