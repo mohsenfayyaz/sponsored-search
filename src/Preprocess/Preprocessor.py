@@ -4,7 +4,8 @@ import pandas as pd
 
 
 class Preprocessor:
-    def create_negative_sampled_dataset(self, input_address, output_address="../data/neg_sampled_data.pkl",
+    @staticmethod
+    def create_negative_sampled_dataset(input_address, output_address="../data/neg_sampled_data.pkl",
                                         neg_to_pos_ratio: int = 5, seed=0, pos_class=1, neg_class=-1):
         """
         :param input_address: input csv address

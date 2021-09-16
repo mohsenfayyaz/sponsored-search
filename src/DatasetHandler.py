@@ -4,25 +4,43 @@ import random
 from transformers import AutoTokenizer
 import datasets
 from sklearn.model_selection import train_test_split
+from src.Utils import Utils
 
 
 class DatasetHandler:
-    def __init__(self, file_address):
+    def __init__(self, file_address, batch_size=32):
         print("Loading tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained("HooshvareLab/bert-base-parsbert-uncased")
         print("Reading input file...")
         self.df = pd.read_csv(file_address) if "csv" in file_address else pd.read_pickle(file_address)
+        self.df['queryText'] = self.df['queryText'].astype(str)
         self.package_to_id, self.id_to_package = self.label_packages(self.df["packageName"],
                                                                      start_id=len(self.tokenizer.get_vocab()))
         print("Creating dataset...")
         self.dataset = self.df_to_dataset(self.df)
+        self.dataset = self.dataset.map(Utils.tokenize_query,
+                                        fn_kwargs={"tokenizer": self.tokenizer},
+                                        batched=True,
+                                        batch_size=batch_size,
+                                        num_proc=None)
+        self.dataset = self.dataset.map(Utils.tokenize_ad,
+                                        fn_kwargs={"package_to_id": self.package_to_id},
+                                        batched=False,
+                                        num_proc=None)
         print("Done")
+
+    def get_tokenizer(self):
+        return self.tokenizer
+
+    def get_dataset(self):
+        return self.dataset
 
     def df_to_dataset(self, data_df, shuffle=True, fraction=0.1, random_state=0, test_size=0.2):
         if shuffle:
             data_df = data_df.sample(frac=fraction, random_state=random_state).reset_index(drop=True)
         else:
             data_df = data_df.sample(frac=fraction, random_state=random_state).sort_index().reset_index(drop=True)
+        self.df = data_df
         train_df, test_df = train_test_split(data_df, test_size=test_size)
         self.dataset = datasets.DatasetDict()
         self.dataset["train"] = datasets.Dataset.from_pandas(train_df)
