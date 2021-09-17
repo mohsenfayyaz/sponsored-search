@@ -11,11 +11,12 @@ class DatasetHandler:
     def __init__(self, file_address, batch_size=32):
         print("Loading tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained("HooshvareLab/bert-base-parsbert-uncased")
+
         print("Reading input file...")
         self.df = pd.read_csv(file_address) if "csv" in file_address else pd.read_pickle(file_address)
         self.df['queryText'] = self.df['queryText'].astype(str)
-        self.package_to_id, self.id_to_package = self.label_packages(self.df["packageName"],
-                                                                     start_id=len(self.tokenizer.get_vocab()))
+        self.package_to_id, self.id_to_package = self.label_packages(self.df["packageName"])
+
         print("Creating dataset...")
         self.dataset = self.df_to_dataset(self.df)
         self.dataset = self.dataset.map(Utils.tokenize_query,
@@ -35,8 +36,11 @@ class DatasetHandler:
     def get_dataset(self):
         return self.dataset
 
-    def get_vocab_size(self):
-        return len(self.tokenizer.get_vocab()) + len(self.package_to_id)
+    def get_query_vocab_size(self):
+        return len(self.tokenizer.get_vocab())
+
+    def get_ad_vocab_size(self):
+        return len(self.package_to_id)
 
     def df_to_dataset(self, data_df, shuffle=True, fraction=0.1, random_state=0, test_size=0.2):
         if shuffle:

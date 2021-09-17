@@ -10,6 +10,5 @@ class RepresentationBuilder(torch.nn.Module):
 
     def forward(self, input_ids, attention_mask):
         out = self.embedding(input_ids)
-        print(out.shape)
         out = self.pooling_module(out, attention_mask)
         return out

@@ -13,7 +13,7 @@ conda install -c huggingface transformers
 ```
  
  ## Running
-Sample notebook is available in [query_ad.ipynb](src/query_ad.ipynb)
+Sample notebook is available in [query_ad.ipynb](query_ad.ipynb)
  
  ## Implementation Process
 * Study the [paper](https://arxiv.org/pdf/1607.01869.pdf) and related material

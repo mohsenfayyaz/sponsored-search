@@ -10,3 +10,5 @@ data/SA_history_clicks_of_98.csv
 src/__pycache__/
 
 src/Preprocess/__pycache__/
+
+*.pt

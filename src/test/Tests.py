@@ -13,10 +13,6 @@ class TestSpanPooling(unittest.TestCase):
         eq = torch.equal(pooled_representation, torch.tensor([[1.5, 1.5, 1.5], [2., 2., 2.]]))
         self.assertTrue(eq)
 
-    def test_trainer(self):
-        dataset_handler = DatasetHandler("../../data/small1.pkl")
-        trainer = Trainer(embedding_dim=5, dataset_handler=dataset_handler)
-        trainer.train()
 
 if __name__ == '__main__':
     unittest.main()
