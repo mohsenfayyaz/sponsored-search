@@ -10,7 +10,7 @@ from src.Utils import Utils
 
 
 class DatasetHandler:
-    def __init__(self, file_address, batch_size=32):
+    def __init__(self, file_address, batch_size=32, frac=1):
         print("Loading tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained("HooshvareLab/bert-base-parsbert-uncased")
 
@@ -20,7 +20,7 @@ class DatasetHandler:
         self.package_to_id, self.id_to_package = self.label_packages(self.df["packageName"])
 
         print("Creating dataset...")
-        self.dataset = self.df_to_dataset(self.df)
+        self.dataset = self.df_to_dataset(self.df, fraction=frac)
         self.dataset = self.dataset.map(Utils.tokenize_query,
                                         fn_kwargs={"tokenizer": self.tokenizer},
                                         batched=True,
@@ -48,7 +48,7 @@ class DatasetHandler:
         with open(output_address, 'wb') as f:
             pickle.dump(self.id_to_package, f, pickle.HIGHEST_PROTOCOL)
 
-    def df_to_dataset(self, data_df, shuffle=True, fraction=0.1, random_state=0, test_size=0.2):
+    def df_to_dataset(self, data_df, fraction, shuffle=True, random_state=0, test_size=0.2):
         if shuffle:
             data_df = data_df.sample(frac=fraction, random_state=random_state).reset_index(drop=True)
         else:

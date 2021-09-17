@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 class Trainer:
-    def __init__(self, dataset_handler: DatasetHandler, embedding_dim, learning_rate=1e-4, device="cuda"):
+    def __init__(self, dataset_handler: DatasetHandler, embedding_dim, learning_rate=5e-4, device="cuda"):
         self.history = {
             "loss": {
                 "train": [],

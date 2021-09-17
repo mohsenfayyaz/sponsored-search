@@ -19,7 +19,7 @@ class QueryAdCoordinator(torch.nn.Module):
     def save_model(self, path="QueryAdCoordinator_checkpoint.pt"):
         # torch.save(self.state_dict(), path)
         torch.save(self, path)
-        print(f"Model saves at {path}")
+        print(f"Model saved at {path}")
 
     def load_model(self, path="QueryAdCoordinator_checkpoint.pt"):
         self.load_state_dict(torch.load(path))
