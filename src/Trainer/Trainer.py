@@ -102,14 +102,14 @@ class Trainer:
 
         return running_loss / steps
 
-    def save_model(self):
-        self.query_ad_coordinator.save_model()
+    def save_model(self, save_address="representations/QueryAdCoordinator_checkpoint.pt"):
+        self.query_ad_coordinator.save_model(save_address)
 
     def load_model(self):
         self.query_ad_coordinator.load_model()
 
-    def save_all_ad_representations(self, repr_output_address="representations/ad_reprs.pt"):
-        self.dataset_handler.save_id_to_package("representations/ad_id_to_package.pkl")
+    def save_all_ad_representations(self, ad_reprs_address="representations/ad_reprs.pt", id_to_package_address="representations/ad_id_to_package.pkl"):
+        self.dataset_handler.save_id_to_package(id_to_package_address)
         ad_representations = None
         for ad_id in tqdm(sorted(self.dataset_handler.id_to_package)):
             ad_id_tensor = torch.tensor([[ad_id]]).to(self.device)
@@ -120,5 +120,5 @@ class Trainer:
             else:
                 ad_representations = torch.cat((ad_representations, ad_repr), dim=0)
         print(ad_representations.shape)
-        torch.save(ad_representations, repr_output_address)
-        print(f"Saved ad representations at {repr_output_address}")
+        torch.save(ad_representations, ad_reprs_address)
+        print(f"Saved ad representations at {ad_reprs_address}")

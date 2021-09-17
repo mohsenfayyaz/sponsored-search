@@ -17,8 +17,9 @@ class QueryAdCoordinator(torch.nn.Module):
         return query_repr, ad_repr
 
     def save_model(self, path="QueryAdCoordinator_checkpoint.pt"):
-        torch.save(self.state_dict(), path)
-        print(f"Model save at {path}")
+        # torch.save(self.state_dict(), path)
+        torch.save(self, path)
+        print(f"Model saves at {path}")
 
     def load_model(self, path="QueryAdCoordinator_checkpoint.pt"):
         self.load_state_dict(torch.load(path))
@@ -26,3 +27,6 @@ class QueryAdCoordinator(torch.nn.Module):
 
     def build_ad_representation(self, ad_id_tensor, attention_mask):
         return self.ad_representation_builder(ad_id_tensor, attention_mask)
+
+    def build_query_representation(self, query_tensor, attention_mask):
+        return self.query_representation_builder(query_tensor, attention_mask)
