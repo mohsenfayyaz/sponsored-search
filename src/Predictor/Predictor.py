@@ -1,6 +1,7 @@
 import pickle
 
 import torch
+from flask import jsonify
 from transformers import AutoTokenizer
 from src.Trainer.QueryAdCoordinator import QueryAdCoordinator
 from src.Utils import Utils
@@ -28,13 +29,16 @@ class Predictor:
         input_ids = torch.tensor(tokenized_query["input_ids"]).to(self.device)
         attention_mask = torch.tensor(tokenized_query["attention_mask"]).to(self.device)
         query_repr = self.query_ad_coordinator.build_query_representation(input_ids, attention_mask)
-        print(query_repr.shape)
-        print(query_repr)
+        # print(query_repr.shape)
+        # print(query_repr)
         knn_values, knn_ids = self.knn(query_repr, self.ad_reprs.to(self.device), k=10)
         # print(self.ad_id_to_package)
-        print(query)
+        # print(query)
+        packages = []
         for value, ad_id in zip(knn_values, knn_ids):
-            print(f"dist: {value:.2f}", self.ad_id_to_package[int(ad_id)])
+            packages.append(self.ad_id_to_package[int(ad_id)])
+            # print(f"dist: {value:.2f}", packages[-1])
+        return packages
 
     def knn(self, query_repr: torch.tensor, ads_reprs: torch.tensor, k=5):
         # dist = torch.norm(query_repr - ads_reprs, dim=1, p=None)
