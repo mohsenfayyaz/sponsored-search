@@ -50,10 +50,29 @@ class SpanPoolingAvg(SpanPooling):
         return avg_span_repr
 
 
+class SpanPoolingMax(SpanPooling):
+    """Class implementing the max-pool span representation."""
+
+    def forward(self, spans, attention_mask):
+        span_masks_shape = attention_mask.shape
+        span_masks = attention_mask.reshape(
+            span_masks_shape[0],
+            span_masks_shape[1],
+            1
+        ).expand_as(spans)
+        attention_spans = spans * span_masks - 1e10 * (1 - span_masks)
+
+        max_span_repr, max_idxs = torch.max(attention_spans, dim=-2)
+        # print(max_span_repr.shape)
+        return max_span_repr
+
+
 def get_pooling_module(method="avg"):
     if method == "cls":
         raise NotImplementedError
     elif method == "avg":
         return SpanPoolingAvg()
+    elif method == "max":
+        return SpanPoolingMax()
     else:
         raise Exception("Unknown Pooling Method!")
