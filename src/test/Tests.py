@@ -1,7 +1,5 @@
 import unittest
-from src.SpanPooling import *
-from src.DatasetHandler import DatasetHandler
-from src.Trainer import Trainer
+from src.Trainer.SpanPooling import *
 
 
 class TestSpanPooling(unittest.TestCase):

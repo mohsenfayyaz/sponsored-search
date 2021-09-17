@@ -12,3 +12,5 @@ src/__pycache__/
 src/Preprocess/__pycache__/
 
 *.pt
+
+src/Trainer/__pycache__/

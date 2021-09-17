@@ -1,5 +1,4 @@
-import torch
-from src.SpanPooling import *
+from src.Trainer.SpanPooling import *
 
 
 class RepresentationBuilder(torch.nn.Module):

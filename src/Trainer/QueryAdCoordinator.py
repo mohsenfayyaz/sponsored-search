@@ -1,6 +1,6 @@
 import torch
 
-from src.RepresentationBuilder import RepresentationBuilder
+from src.Trainer.RepresentationBuilder import RepresentationBuilder
 
 
 class QueryAdCoordinator(torch.nn.Module):
@@ -23,3 +23,6 @@ class QueryAdCoordinator(torch.nn.Module):
     def load_model(self, path="QueryAdCoordinator_checkpoint.pt"):
         self.load_state_dict(torch.load(path))
         print(f"Model loaded from {path}")
+
+    def build_ad_representation(self, ad_id_tensor, attention_mask):
+        return self.ad_representation_builder(ad_id_tensor, attention_mask)

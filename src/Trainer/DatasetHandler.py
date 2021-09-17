@@ -1,3 +1,5 @@
+import pickle
+
 import pandas as pd
 from tqdm.auto import tqdm
 import random
@@ -41,6 +43,10 @@ class DatasetHandler:
 
     def get_ad_vocab_size(self):
         return len(self.package_to_id)
+
+    def save_id_to_package(self, output_address="id_to_package.pkl"):
+        with open(output_address, 'wb') as f:
+            pickle.dump(self.id_to_package, f, pickle.HIGHEST_PROTOCOL)
 
     def df_to_dataset(self, data_df, shuffle=True, fraction=0.1, random_state=0, test_size=0.2):
         if shuffle:

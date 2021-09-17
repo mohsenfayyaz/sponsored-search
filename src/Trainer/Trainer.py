@@ -1,7 +1,7 @@
 import torch
 from tqdm.auto import tqdm
-from src.DatasetHandler import DatasetHandler
-from src.QueryAdCoordinator import QueryAdCoordinator
+from src.Trainer.DatasetHandler import DatasetHandler
+from src.Trainer.QueryAdCoordinator import QueryAdCoordinator
 import matplotlib.pyplot as plt
 
 
@@ -62,7 +62,7 @@ class Trainer:
         x1 = torch.tensor(batch["input_ids"]).to(self.device)
         x2 = torch.tensor(batch["package_ids"]).to(self.device)
         attention_mask1 = torch.tensor(batch["attention_mask"]).to(self.device)
-        attention_mask2 = torch.tensor([1]).to(self.device)
+        attention_mask2 = torch.ones(len(x2), 1, device=self.device)
         labels = torch.tensor(batch["similar"]).to(self.device)
         return [x1, x2, attention_mask1, attention_mask2], labels
 
@@ -107,3 +107,18 @@ class Trainer:
 
     def load_model(self):
         self.query_ad_coordinator.load_model()
+
+    def save_all_ad_representations(self, repr_output_address="representations/ad_reprs.pt"):
+        self.dataset_handler.save_id_to_package("representations/ad_id_to_package.pkl")
+        ad_representations = None
+        for ad_id in tqdm(sorted(self.dataset_handler.id_to_package)):
+            ad_id_tensor = torch.tensor([[ad_id]]).to(self.device)
+            attention_mask = torch.ones(1, 1, device=self.device)
+            ad_repr = self.query_ad_coordinator.build_ad_representation(ad_id_tensor, attention_mask)
+            if ad_representations is None:
+                ad_representations = ad_repr
+            else:
+                ad_representations = torch.cat((ad_representations, ad_repr), dim=0)
+        print(ad_representations.shape)
+        torch.save(ad_representations, repr_output_address)
+        print(f"Saved ad representations at {repr_output_address}")
