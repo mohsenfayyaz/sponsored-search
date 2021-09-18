@@ -4,7 +4,7 @@ for generating desired embeddings from queries and ads in the same representatio
 
 <div style="text-align:center">
 <p>
-    <img src="images/tsne.png" width="300" alt="tsne">
+    <img src="images/tsne.png" width="350" alt="tsne">
 </p>
     <em>Visualized example using t-distributed stochastic neighbor embedding</em>
 </div>
@@ -43,7 +43,7 @@ Visual Interface
  ```shell script
 http://127.0.0.1:5000/predict/visual?query="<string>"&k=<integer>
 ```
-<img src="images/visual_predictions.png.png" width="200" alt="tsne">
+<img src="images/visual_predictions.png" width="250" alt="visual_predictions">
 
  
  ## Implementation Process
