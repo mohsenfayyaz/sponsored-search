@@ -4,7 +4,7 @@ for generating desired embeddings from queries and ads in the same representatio
 
 <div style="text-align:center">
 <p>
-    <img src="images/tsne.png" width="350" alt="tsne">
+    <img src="images/tsne.png" width="400px" alt="tsne">
 </p>
     <em>Visualized example using t-distributed stochastic neighbor embedding</em>
 </div>
@@ -33,13 +33,14 @@ project
 └── ...
 ```
  ```shell script
-python3 scr/server/server.py
+$ python3 src/server/server.py
 ```
-API
+⚠ First request might be slow due to loading required files.
+##### API
  ```shell script
 http://127.0.0.1:5000/predict?query="<string>"
 ```
-Visual Interface
+##### Visual Interface
  ```shell script
 http://127.0.0.1:5000/predict/visual?query="<string>"&k=<integer>
 ```
