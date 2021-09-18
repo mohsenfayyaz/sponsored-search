@@ -14,7 +14,7 @@ class Preprocessor:
         :param seed: random seed for selecting negative classes
         :param neg_class: Value for positive classes in similar column
         :param pos_class: Value for positive classes in negative column
-        :return: None
+        :return: dataframe of the new dataset
         """
         print(f"Reading input file {input_address}")
         df = pd.read_csv(input_address) if "csv" in input_address else pd.read_pickle(input_address)

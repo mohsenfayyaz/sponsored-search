@@ -3,7 +3,6 @@ from tqdm.auto import tqdm
 from src.Trainer.DatasetHandler import DatasetHandler
 from src.Trainer.QueryAdCoordinator import QueryAdCoordinator
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 class Trainer:
@@ -31,7 +30,6 @@ class Trainer:
         print(f"Train on {train_dataset_len} samples, test on {test_dataset_len} samples")
         self.query_ad_coordinator.to(self.device)
 
-        # self.query_ad_coordinator(torch.tensor([[1], [0, 0, 0, 0]]), torch.tensor([[1, 2, 3, 3], [9, 9, 9, 9]]))
         for epoch in range(epochs):
             running_loss = 0.0
             steps = 0
@@ -123,10 +121,7 @@ class Trainer:
             attention_mask = torch.ones(1, 1, device=device)
             ad_repr = self.query_ad_coordinator.build_ad_representation(ad_id_tensor, attention_mask)
             ad_representations.append(ad_repr[0])
-            # if ad_representations is None:
-            #     ad_representations = ad_repr
-            # else:
-            #     ad_representations = torch.cat((ad_representations, ad_repr), dim=0)
+
         ad_representations = torch.stack(ad_representations)
         print(ad_representations.shape)
         torch.save(ad_representations, path)

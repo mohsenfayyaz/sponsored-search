@@ -1,10 +1,6 @@
 import pickle
-
 import torch
-from flask import jsonify
 from transformers import AutoTokenizer
-from src.Trainer.QueryAdCoordinator import QueryAdCoordinator
-from src.Utils import Utils
 
 
 class Predictor:
@@ -26,11 +22,7 @@ class Predictor:
 
     def predict_from_query(self, query: str, full_results=False, k=10):
         query_repr = self.build_query_representation(query)
-        # print(query_repr.shape)
-        # print(query_repr)
         knn_values, knn_ids = self.knn(query_repr, self.ad_reprs, k)
-        # print(self.ad_id_to_package)
-        # print(query)
         packages = []
         for value, ad_id in zip(knn_values, knn_ids):
             packages.append(self.ad_id_to_package[int(ad_id)])
@@ -44,7 +36,6 @@ class Predictor:
     def build_query_representation(self, query):
         tokenized_query = self.tokenizer(query, padding=True)
         input_ids = torch.tensor(tokenized_query["input_ids"])
-        # print(input_ids)
         query_sum = torch.zeros(self.reprs_shape)
         for word_id in input_ids:
             query_sum += self.vocab_reprs[int(word_id)]
