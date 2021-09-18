@@ -28,7 +28,6 @@ class Trainer:
         train_dataset_len = len(tokenized_dataset_train)
         test_dataset_len = len(tokenized_dataset_test)
         print(f"Train on {train_dataset_len} samples, test on {test_dataset_len} samples")
-        print("B")
         self.query_ad_coordinator.to(self.device)
 
         # self.query_ad_coordinator(torch.tensor([[1], [0, 0, 0, 0]]), torch.tensor([[1, 2, 3, 3], [9, 9, 9, 9]]))
@@ -108,10 +107,16 @@ class Trainer:
     def load_model(self):
         self.query_ad_coordinator.load_model()
 
-    def save_all_ad_representations(self, ad_reprs_address="representations/ad_reprs.pt", id_to_package_address="representations/ad_id_to_package.pkl"):
+    def save_all_representations(self, ad_reprs_address="representations/ad_reprs.pt",
+                                 vocab_reprs_address="representations/vocab_reprs.pt",
+                                 id_to_package_address="representations/ad_id_to_package.pkl"):
         self.dataset_handler.save_id_to_package(id_to_package_address)
+        self.save_vocab_reprs(vocab_reprs_address)
+        self.save_ad_reprs(ad_reprs_address)
+
+    def save_ad_reprs(self, path):
         ad_representations = None
-        for ad_id in tqdm(sorted(self.dataset_handler.id_to_package)):
+        for ad_id in tqdm(sorted(self.dataset_handler.id_to_package), desc="Building ad representations"):
             ad_id_tensor = torch.tensor([[ad_id]]).to(self.device)
             attention_mask = torch.ones(1, 1, device=self.device)
             ad_repr = self.query_ad_coordinator.build_ad_representation(ad_id_tensor, attention_mask)
@@ -120,5 +125,16 @@ class Trainer:
             else:
                 ad_representations = torch.cat((ad_representations, ad_repr), dim=0)
         print(ad_representations.shape)
-        torch.save(ad_representations, ad_reprs_address)
-        print(f"Saved ad representations at {ad_reprs_address}")
+        torch.save(ad_representations, path)
+        print(f"Saved ad representations at {path}")
+
+    def save_vocab_reprs(self, path):
+        vocab_representations = dict()
+        for word, word_id in tqdm(self.dataset_handler.tokenizer.get_vocab().items(), desc="Building vocab representations"):
+            word_id_tensor = torch.tensor([[word_id]]).to(self.device)
+            attention_mask = torch.ones(1, 1, device=self.device)
+            word_repr = self.query_ad_coordinator.build_query_representation(word_id_tensor, attention_mask)
+            vocab_representations[word_id] = word_repr
+        print(len(vocab_representations))
+        torch.save(vocab_representations, path)
+        print(f"Saved vocab representations at {path}")

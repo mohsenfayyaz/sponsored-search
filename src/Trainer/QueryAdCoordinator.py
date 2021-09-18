@@ -8,6 +8,7 @@ class QueryAdCoordinator(torch.nn.Module):
         super(QueryAdCoordinator, self).__init__()
         self.query_representation_builder = RepresentationBuilder(query_vocab_size, embedding_dim)
         self.ad_representation_builder = RepresentationBuilder(ad_vocab_size, embedding_dim)
+
         self.loss = torch.nn.CosineEmbeddingLoss(margin=0)
         self.optimizer = self.optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate, weight_decay=0)
 
