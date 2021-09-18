@@ -3,6 +3,7 @@ from tqdm.auto import tqdm
 from src.Trainer.DatasetHandler import DatasetHandler
 from src.Trainer.QueryAdCoordinator import QueryAdCoordinator
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Trainer:
@@ -111,30 +112,37 @@ class Trainer:
                                  vocab_reprs_address="representations/vocab_reprs.pt",
                                  id_to_package_address="representations/ad_id_to_package.pkl"):
         self.dataset_handler.save_id_to_package(id_to_package_address)
-        self.save_vocab_reprs(vocab_reprs_address)
         self.save_ad_reprs(ad_reprs_address)
+        self.save_vocab_reprs(vocab_reprs_address)
 
-    def save_ad_reprs(self, path):
-        ad_representations = None
+    def save_ad_reprs(self, path, device="cpu"):
+        self.query_ad_coordinator.to(device)
+        ad_representations = []
         for ad_id in tqdm(sorted(self.dataset_handler.id_to_package), desc="Building ad representations"):
-            ad_id_tensor = torch.tensor([[ad_id]]).to(self.device)
-            attention_mask = torch.ones(1, 1, device=self.device)
+            ad_id_tensor = torch.tensor([[ad_id]]).to(device)
+            attention_mask = torch.ones(1, 1, device=device)
             ad_repr = self.query_ad_coordinator.build_ad_representation(ad_id_tensor, attention_mask)
-            if ad_representations is None:
-                ad_representations = ad_repr
-            else:
-                ad_representations = torch.cat((ad_representations, ad_repr), dim=0)
+            ad_representations.append(ad_repr[0])
+            # if ad_representations is None:
+            #     ad_representations = ad_repr
+            # else:
+            #     ad_representations = torch.cat((ad_representations, ad_repr), dim=0)
+        ad_representations = torch.stack(ad_representations)
         print(ad_representations.shape)
         torch.save(ad_representations, path)
         print(f"Saved ad representations at {path}")
+        self.query_ad_coordinator.to(self.device)
 
-    def save_vocab_reprs(self, path):
+    def save_vocab_reprs(self, path, device="cpu"):
+        self.query_ad_coordinator.to(device)
         vocab_representations = dict()
-        for word, word_id in tqdm(self.dataset_handler.tokenizer.get_vocab().items(), desc="Building vocab representations"):
-            word_id_tensor = torch.tensor([[word_id]]).to(self.device)
-            attention_mask = torch.ones(1, 1, device=self.device)
+        for word, word_id in tqdm(self.dataset_handler.tokenizer.get_vocab().items(),
+                                  desc="Building vocab representations"):
+            word_id_tensor = torch.tensor([[word_id]]).to(device)
+            attention_mask = torch.ones(1, 1, device=device)
             word_repr = self.query_ad_coordinator.build_query_representation(word_id_tensor, attention_mask)
             vocab_representations[word_id] = word_repr
         print(len(vocab_representations))
         torch.save(vocab_representations, path)
         print(f"Saved vocab representations at {path}")
+        self.query_ad_coordinator.to(self.device)
